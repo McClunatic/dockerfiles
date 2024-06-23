@@ -1,6 +1,6 @@
 ARG BASE_REGISTRY=docker.io
-ARG BASE_IMAGE=library/alpine
-ARG BASE_TAG=3.20
+ARG BASE_IMAGE=library/python
+ARG BASE_TAG=3.12-alpine3.20
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
 ARG STARSHIP_VERSION=1.19.0
@@ -23,7 +23,11 @@ set -eux
 apk update
 apk upgrade
 apk add bash git helix openssh
-apk add file gcc g++ gnupg lsb-release-minimal make patch patchelf py3-clingo python3 xz zstd
+for grammar in toml python json lua cmake ini regex c bash comment cpp
+do
+  apk add tree-sitter-$grammar
+done
+apk add file gcc g++ gnupg lsb-release-minimal make patch patchelf xz zstd linux-headers
 adduser -D -s /bin/bash ${USER_NAME}
 touch /entrypoint.sh
 chmod a+x /entrypoint.sh
