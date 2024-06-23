@@ -23,6 +23,10 @@ set -eux
 apk update
 apk upgrade
 apk add bash git helix openssh
+for grammar in javascript toml python json lua cmake ini regex css c bash comment cpp html
+do
+  apk add tree-sitter-$grammar
+done
 adduser -D -s /bin/bash ${USER_NAME}
 touch /entrypoint.sh
 chmod a+x /entrypoint.sh
