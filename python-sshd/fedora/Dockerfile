@@ -2,11 +2,8 @@ ARG BASE_REGISTRY=docker.io
 ARG BASE_IMAGE=library/fedora
 ARG BASE_TAG=40
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS pythonbuild
 ARG PYTHON_VERSION=3.12.4
-ARG STARSHIP_VERSION=1.19.0
-ARG SSH_PORT=10648
-ARG USER_NAME=python
 
 # Add python; borrow from github.com/docker-library/python
 # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
@@ -110,6 +107,12 @@ rm -f get-pip.py
 pip --version
 EOF
 
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} AS pythonsshd
+ARG STARSHIP_VERSION=1.19.0
+ARG SSH_PORT=10648
+ARG USER_NAME=python
+COPY --from=pythonbuild /usr/local /usr/local
+
 # Add starship for bash shell prompt
 RUN <<EOF
 set -eux
@@ -119,9 +122,27 @@ chmod +x install.sh
 rm install.sh
 EOF
 
-# Add developer tools and create entrypoint script
+# Add python dependencies and developer tools and create entrypoint script
 RUN <<EOF
 set -eux
+dnf install -y \
+  bzip2-libs \
+  expat \
+  gdbm-libs \
+  libb2 \
+  libffi \
+  libnsl2 \
+  libtirpc \
+  libuuid \
+  libxcrypt \
+  mpdecimal \
+  ncurses-libs \
+  openssl-libs \
+  readline \
+  sqlite-libs \
+  tzdata \
+  xz-libs \
+  zlib-ng-compat
 dnf install -y bash git helix openssh
 useradd --create-home --shell /bin/bash ${USER_NAME}
 touch /entrypoint.sh
