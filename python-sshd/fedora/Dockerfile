@@ -113,18 +113,10 @@ ARG SSH_PORT=10648
 ARG USER_NAME=python
 COPY --from=pythonbuild /usr/local /usr/local
 
-# Add starship for bash shell prompt
-RUN <<EOF
-set -eux
-curl -O "https://starship.rs/install.sh"
-chmod +x install.sh
-./install.sh --yes --version v"${STARSHIP_VERSION}"
-rm install.sh
-EOF
-
 # Add python dependencies and developer tools and create entrypoint script
 RUN <<EOF
 set -eux
+dnf update -y
 dnf install -y \
   bzip2-libs \
   expat \
@@ -143,10 +135,20 @@ dnf install -y \
   tzdata \
   xz-libs \
   zlib-ng-compat
-dnf install -y bash git helix openssh
+dnf install -y bash git helix openssh openssh-server
 useradd --create-home --shell /bin/bash ${USER_NAME}
 touch /entrypoint.sh
 chmod a+x /entrypoint.sh
+chmod a+r /etc/ssh/sshd_config
+EOF
+
+# Add starship for bash shell prompt
+RUN <<EOF
+set -eux
+curl -O "https://starship.rs/install.sh"
+chmod +x install.sh
+./install.sh --yes --version v"${STARSHIP_VERSION}"
+rm install.sh
 EOF
 
 # Write entrypoint script
