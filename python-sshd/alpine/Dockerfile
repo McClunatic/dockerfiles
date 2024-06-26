@@ -7,16 +7,6 @@ ARG STARSHIP_VERSION=1.19.0
 ARG SSH_PORT=10648
 ARG USER_NAME=python
 
-# Add starship for bash shell prompt
-RUN <<EOF
-set -eux
-wget "https://starship.rs/install.sh"
-chmod +x install.sh
-./install.sh --yes --version v"${STARSHIP_VERSION}" \
-  --platform unknown-linux-musl --arch "$(apk --print-arch)"
-rm install.sh
-EOF
-
 # Add developer tools and create entrypoint script
 RUN <<EOF
 set -eux
@@ -30,6 +20,16 @@ done
 adduser -D -s /bin/bash ${USER_NAME}
 touch /entrypoint.sh
 chmod a+x /entrypoint.sh
+EOF
+
+# Add starship for bash shell prompt
+RUN <<EOF
+set -eux
+wget "https://starship.rs/install.sh"
+chmod +x install.sh
+./install.sh --yes --version v"${STARSHIP_VERSION}" \
+  --platform unknown-linux-musl --arch "$(apk --print-arch)"
+rm install.sh
 EOF
 
 # Write entrypoint script
