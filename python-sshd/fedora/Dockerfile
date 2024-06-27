@@ -135,7 +135,7 @@ dnf install -y \
   tzdata \
   xz-libs \
   zlib-ng-compat
-dnf install -y bash git helix openssh openssh-server
+dnf install -y bash git helix openssh openssh-server xorg-x11-xauth xeyes
 useradd --create-home --shell /bin/bash ${USER_NAME}
 touch /entrypoint.sh
 chmod a+x /entrypoint.sh
@@ -167,6 +167,8 @@ USER ${USER_NAME}
 RUN <<EOF
 mkdir ~/.sshd
 grep -v -e "^ *#" -e "^$" -e "Include" /etc/ssh/sshd_config > ~/.sshd/config
+sed -i 's/UsePAM yes/UsePAM no/g' > ~/.sshd/config
+echo "X11Forwarding yes" >> ~/.sshd/config
 echo "PidFile none" >> ~/.sshd/config
 echo "Port ${SSH_PORT}" >> ~/.sshd/config
 for keytype in rsa ecdsa ed25519
