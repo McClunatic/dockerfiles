@@ -135,7 +135,7 @@ dnf install -y \
   tzdata \
   xz-libs \
   zlib-ng-compat
-dnf install -y bash git helix openssh openssh-server xorg-x11-xauth xeyes
+dnf install -y bash git helix which less openssh openssh-server xorg-x11-xauth xeyes
 useradd --create-home --shell /bin/bash ${USER_NAME}
 touch /entrypoint.sh
 chmod a+x /entrypoint.sh
