@@ -22,7 +22,7 @@ RUN <<EOF
 set -eux
 apk update
 apk upgrade
-apk add bash git helix openssh
+apk add bash git helix openssh xauth xeyes
 for grammar in toml python json lua cmake ini regex c bash comment cpp
 do
   apk add tree-sitter-$grammar
@@ -49,6 +49,7 @@ USER ${USER_NAME}
 RUN <<EOF
 mkdir ~/.sshd
 grep -v -e "^ *#" -e "^$" -e "Include" /etc/ssh/sshd_config > ~/.sshd/config
+sed -i 's/X11Forwarding no/X11Forwarding yes/g' ~/.sshd/config
 echo "PidFile none" >> ~/.sshd/config
 echo "Port ${SSH_PORT}" >> ~/.sshd/config
 for keytype in rsa ecdsa ed25519
