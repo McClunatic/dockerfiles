@@ -133,7 +133,7 @@ dnf install -y \
   xz-libs \
   zlib
 
-dnf install -y bash git openssh openssh-server which less xz
+dnf install -y bash git which xz openssh openssh-server xorg-x11-xauth xterm
 useradd --create-home --shell /bin/bash ${USER_NAME}
 touch /entrypoint.sh
 chmod a+x /entrypoint.sh
@@ -173,6 +173,7 @@ USER ${USER_NAME}
 RUN <<EOF
 mkdir ~/.sshd
 grep -v -e "^ *#" -e "^$" -e "Include" /etc/ssh/sshd_config > ~/.sshd/config
+echo "X11Forwarding yes" >> ~/.sshd/config
 echo "PidFile none" >> ~/.sshd/config
 echo "Port ${SSH_PORT}" >> ~/.sshd/config
 for keytype in rsa ecdsa ed25519
